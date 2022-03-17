@@ -32,7 +32,7 @@ class HomeView extends TabbedView {
         return [{
             name: globalize.translate('Home')
         }, {
-            name: globalize.translate('Favorites')
+            name: "Favoris"
         }];
     }
 
