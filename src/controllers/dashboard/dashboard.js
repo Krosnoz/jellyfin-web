@@ -115,6 +115,21 @@ import confirm from '../../components/confirm/confirm';
         });
     }
 
+    function onSendStringSubmit(e) {
+        const form = e.target;
+        DashboardPage.sessionsList.forEach(session => {
+            ServerConnections.getApiClient(session.ServerId).sendMessageCommand(session.Id, {
+                Text: form.querySelector('#txtTypeText', form).value,
+                TimeoutMs: 15000
+            });
+        });
+        form.querySelector('input').value = '';
+
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    }
+    
     function onActiveDevicesClick(evt) {
         const btn = dom.parentWithClass(evt.target, 'sessionCardButton');
 
@@ -774,6 +789,7 @@ import confirm from '../../components/confirm/confirm';
 
         const serverId = ApiClient.serverId();
         view.querySelector('.activeDevices').addEventListener('click', onActiveDevicesClick);
+        view.querySelector('.typeTextForm').addEventListener('submit', onSendStringSubmit);
         view.addEventListener('viewshow', function () {
             const page = this;
             const apiClient = ApiClient;
@@ -789,6 +805,7 @@ import confirm from '../../components/confirm/confirm';
                 Events.on(serverNotifications, 'PackageInstallationCompleted', onPackageInstallationCompleted);
                 Events.on(serverNotifications, 'Sessions', onSessionsUpdate);
                 Events.on(serverNotifications, 'ScheduledTasksInfo', onScheduledTasksUpdate);
+                Events.on(serverNotifications, 'SendString', onSendStringSubmit);
                 DashboardPage.lastAppUpdateCheck = null;
                 reloadSystemInfo(page, ApiClient);
 

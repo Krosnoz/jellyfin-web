@@ -3,7 +3,19 @@ import ServerConnections from '../../components/ServerConnections';
 import alert from '../../components/alert';
 
 function showErrorMessage() {
-    return alert(globalize.translate('MessagePlayAccessRestricted'));
+    let msg = globalize.translate('MessagePlayAccessRestricted');
+    msg += '<br/><br/>';
+    msg += '<img style="width: 100%;" src="https://i.imgur.com/4ndpDEP.png">';
+
+    return alert(msg, 'Streaming désactivé');
+}
+
+function showErrorH265Message() {
+    let msg = 'Ce film est dans un format non pris en charge par le streaming. Vous pouvez toujours télécharger le contenu en cliquant sur les trois points alignés puis téléchargement.';
+    msg += '<br/><br/>';
+    msg += '<img style="width: 100%;" src="https://i.imgur.com/4ndpDEP.png">';
+
+    return alert(msg, 'Non disponible en streaming');
 }
 
 class PlayAccessValidation {
@@ -24,12 +36,22 @@ class PlayAccessValidation {
             return Promise.resolve();
         }
 
+        try {
+            const apiClient = ServerConnections.getApiClient(serverId);
+            return apiClient.getItem(apiClient.getCurrentUserId(), item.Id).then(itemData => {
+                if (itemData.MediaStreams[0].Codec == 'hevc' || itemData.MediaStreams[0].Codec == 'h265') {
+                    return showErrorH265Message().finally(Promise.reject);
+                }
+            });
+        } catch (error) {
+            console.log(error);
+        }
+
         return ServerConnections.getApiClient(serverId).getCurrentUser().then(function (user) {
             if (user.Policy.EnableMediaPlayback) {
                 return Promise.resolve();
             }
 
-            // reject but don't show an error message
             if (!options.fullscreen) {
                 return Promise.reject();
             }

@@ -32,7 +32,9 @@ class HomeView extends TabbedView {
         return [{
             name: globalize.translate('Home')
         }, {
-            name: "Favoris"
+            name: globalize.translate('Favorites')
+        }, {
+            name: globalize.translate('Requests')
         }];
     }
 
@@ -48,21 +50,26 @@ class HomeView extends TabbedView {
                 depends = 'hometab';
                 break;
 
-            case 1:
-                depends = 'favorites';
+                case 1:
+                    depends = 'favorites';
+                    break;
+    
+                case 2:
+                    depends = 'requests';
         }
+        if (index != 2) {
+            const instance = this;
+            return import(/* webpackChunkName: "[request]" */ `../controllers/${depends}`).then(({ default: controllerFactory }) => {
+                let controller = instance.tabControllers[index];
 
-        const instance = this;
-        return import(/* webpackChunkName: "[request]" */ `../controllers/${depends}`).then(({ default: controllerFactory }) => {
-            let controller = instance.tabControllers[index];
+                if (!controller) {
+                    controller = new controllerFactory(instance.view.querySelector(".tabContent[data-index='" + index + "']"), instance.params);
+                    instance.tabControllers[index] = controller;
+                }
 
-            if (!controller) {
-                controller = new controllerFactory(instance.view.querySelector(".tabContent[data-index='" + index + "']"), instance.params);
-                instance.tabControllers[index] = controller;
-            }
-
-            return controller;
-        });
+                return controller;
+            });
+        }
     }
 }
 
