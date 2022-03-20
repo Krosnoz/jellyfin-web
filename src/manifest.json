@@ -1,7 +1,7 @@
 {
     "name": "KrosMovie",
     "description": "The Free Software Media System",
-    "lang": "en-US",
+    "lang": "fr-FR",
     "short_name": "KrosMovie",
     "start_url": "index.html#!/home.html",
     "theme_color": "#101010",

@@ -18,6 +18,7 @@ import '../assets/css/scrollstyles.scss';
 import '../assets/css/flexstyles.scss';
 import Dashboard, { pageClassOn } from './clientUtils';
 import ServerConnections from '../components/ServerConnections';
+import serverNotifications from './serverNotifications';
 import Headroom from 'headroom.js';
 
 /* eslint-disable indent */
@@ -38,6 +39,7 @@ import Headroom from 'headroom.js';
         html += '<button is="paper-icon-button-light" class="headerCastButton castButton headerButton headerButtonRight hide"><span class="material-icons cast" aria-hidden="true"></span></button>';
         html += '<button type="button" is="paper-icon-button-light" class="headerButton headerButtonRight headerSearchButton hide"><span class="material-icons search" aria-hidden="true"></span></button>';
         html += '<button is="paper-icon-button-light" class="headerButton headerButtonRight headerUserButton hide"><span class="material-icons person" aria-hidden="true"></span></button>';
+        html += '<button is="paper-icon-button-light" class="headerButton headerButtonRight headerUsersOnline"><span class="material-icons earth" aria-hidden="true"><p></p></span></button>';
         html += '</div>';
         html += '</div>';
         html += '<div class="headerTabs sectionTabs hide">';
@@ -55,6 +57,7 @@ import Headroom from 'headroom.js';
         headerAudioPlayerButton = skinHeader.querySelector('.headerAudioPlayerButton');
         headerSearchButton = skinHeader.querySelector('.headerSearchButton');
         headerSyncButton = skinHeader.querySelector('.headerSyncButton');
+        headerUsersOnline = skinHeader.querySelector('.headerUsersOnline>span>p');
 
         retranslateUi();
         lazyLoadViewMenuBarImages();
@@ -154,6 +157,9 @@ import Headroom from 'headroom.js';
             if (headerSyncButton && policy?.SyncPlayAccess !== 'None' && apiClient.isMinServerVersion('10.6.0')) {
                 headerSyncButton.classList.remove('hide');
             }
+            apiClient.sendMessage('SessionsStart', '0,1500');
+
+            Events.on(serverNotifications, 'Sessions', onSessionsUpdate);
         } else {
             headerHomeButton.classList.add('hide');
             headerCastButton.classList.add('hide');
@@ -165,6 +171,10 @@ import Headroom from 'headroom.js';
         }
 
         requiresUserRefresh = false;
+    }
+
+    function onSessionsUpdate(evt, apiClient, info) {
+        headerUsersOnline.innerText = info.length;
     }
 
     function updateHeaderUserButton(src) {
@@ -923,6 +933,7 @@ import Headroom from 'headroom.js';
     let headerSearchButton;
     let headerAudioPlayerButton;
     let headerSyncButton;
+    let headerUsersOnline;
     const enableLibraryNavDrawer = layoutManager.desktop;
     const enableLibraryNavDrawerHome = !layoutManager.tv;
     const skinHeader = document.querySelector('.skinHeader');
