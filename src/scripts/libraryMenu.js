@@ -158,6 +158,7 @@ import Headroom from 'headroom.js';
                 headerSyncButton.classList.remove('hide');
             }
             apiClient.sendMessage('SessionsStart', '0,1500');
+            apiClient.sendMessage('ScheduledTasksInfoStart', '0,1000');
         } else {
             headerHomeButton.classList.add('hide');
             headerCastButton.classList.add('hide');
