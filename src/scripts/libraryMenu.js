@@ -963,7 +963,7 @@ import Headroom from 'headroom.js';
             pageTitleElement.innerHTML = '';
         }
 
-        document.title = 'Jellyfin';
+        document.title = 'KrosMovie';
     }
 
     function setTitle (title) {
@@ -988,7 +988,7 @@ import Headroom from 'headroom.js';
             pageTitleElement.innerText = html || '';
         }
 
-        document.title = title || 'Jellyfin';
+        document.title = title || 'KrosMovie';
     }
 
     function setTransparentMenu (transparent) {
