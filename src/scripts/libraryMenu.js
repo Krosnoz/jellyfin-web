@@ -158,8 +158,6 @@ import Headroom from 'headroom.js';
                 headerSyncButton.classList.remove('hide');
             }
             apiClient.sendMessage('SessionsStart', '0,1500');
-
-            Events.on(serverNotifications, 'Sessions', onSessionsUpdate);
         } else {
             headerHomeButton.classList.add('hide');
             headerCastButton.classList.add('hide');
@@ -1044,6 +1042,8 @@ import Headroom from 'headroom.js';
         updateBackButton(page);
         updateLibraryNavLinks(page);
     });
+
+    Events.on(serverNotifications, 'Sessions', onSessionsUpdate);
 
     Events.on(ServerConnections, 'localusersignedin', function (e, user) {
         const currentApiClient = ServerConnections.getApiClient(user.ServerId);
