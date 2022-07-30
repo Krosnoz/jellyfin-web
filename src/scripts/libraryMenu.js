@@ -42,7 +42,7 @@ function renderHeader() {
     html += '<button is="paper-icon-button-light" class="headerCastButton castButton headerButton headerButtonRight hide"><span class="material-icons cast" aria-hidden="true"></span></button>';
     html += '<button type="button" is="paper-icon-button-light" class="headerButton headerButtonRight headerSearchButton hide"><span class="material-icons search" aria-hidden="true"></span></button>';
     html += '<button is="paper-icon-button-light" class="headerButton headerButtonRight headerUserButton hide"><span class="material-icons person" aria-hidden="true"></span></button>';
-    html += '<button is="paper-icon-button-light" class="headerButton headerButtonRight headerUsersOnline"><span class="material-icons earth" aria-hidden="true"><p></p></span></button>';
+    html += '<button is="paper-icon-button-light" class="headerButton headerButtonRight headerUsersOnline"><span class="material-icons earth" aria-hidden="true"><p>0</p></span></button>';
     html += '</div>';
     html += '</div>';
     html += '<div class="headerTabs sectionTabs hide">';
@@ -161,6 +161,7 @@ function updateUserInHeader(user) {
         if (headerSyncButton && policy?.SyncPlayAccess !== 'None' && apiClient.isMinServerVersion('10.6.0')) {
             headerSyncButton.classList.remove('hide');
         }
+        apiClient.sendMessage('SessionsStart', '0,1500');
     } else {
         headerHomeButton.classList.add('hide');
         headerCastButton.classList.add('hide');
@@ -1099,8 +1100,10 @@ const LibraryMenu = {
 window.LibraryMenu = LibraryMenu;
 renderHeader();
 
-setInterval(() => {
-    const apiClient = getCurrentApiClient();
+Events.on(serverNotifications, 'Sessions', updateUsers);
+
+function updateUsers(evt, apiClient, info) {
+    console.log(info);
     if (!apiClient._loggedIn) return;
     apiClient.getSessions({
         ActiveWithinSeconds: 960
@@ -1116,7 +1119,7 @@ setInterval(() => {
         headerUsersOnline.innerText = endSessions.length;
         activeUsers = endSessions;
     });
-}, 10000);
+}
 
 export default LibraryMenu;
 
