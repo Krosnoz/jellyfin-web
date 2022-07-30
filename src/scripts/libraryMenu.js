@@ -42,7 +42,8 @@ function renderHeader() {
     html += '<button is="paper-icon-button-light" class="headerCastButton castButton headerButton headerButtonRight hide"><span class="material-icons cast" aria-hidden="true"></span></button>';
     html += '<button type="button" is="paper-icon-button-light" class="headerButton headerButtonRight headerSearchButton hide"><span class="material-icons search" aria-hidden="true"></span></button>';
     html += '<button is="paper-icon-button-light" class="headerButton headerButtonRight headerUserButton hide"><span class="material-icons person" aria-hidden="true"></span></button>';
-    html += '<button is="paper-icon-button-light" class="headerButton headerButtonRight headerUsersOnline"><span class="material-icons earth" aria-hidden="true"><p>0</p></span></button>';
+    html += '<button is="paper-icon-button-light" class="headerButton headerButtonRight headerUsersOnline"><span class="material-icons live_tv" aria-hidden="true"><p>0</p></span></button>';
+    html += '<button is="paper-icon-button-light" class="headerButton headerButtonRight headerWatchPartyButton"><span class="material-icons video_library" aria-hidden="true"></span></button>';
     html += '</div>';
     html += '</div>';
     html += '<div class="headerTabs sectionTabs hide">';
@@ -60,6 +61,7 @@ function renderHeader() {
     headerAudioPlayerButton = skinHeader.querySelector('.headerAudioPlayerButton');
     headerSearchButton = skinHeader.querySelector('.headerSearchButton');
     headerSyncButton = skinHeader.querySelector('.headerSyncButton');
+    headerWatchPartyButton = skinHeader.querySelector('.headerWatchPartyButton');
     headerUsers = skinHeader.querySelector('.headerUsersOnline');
     headerUsersOnline = skinHeader.querySelector('.headerUsersOnline>span>p');
 
@@ -119,6 +121,10 @@ function retranslateUi() {
     if (headerUserButton) {
         headerUserButton.title = globalize.translate('Settings');
     }
+
+    if (headerWatchPartyButton) {
+        headerWatchPartyButton.title = 'Communauté';
+    }
 }
 
 function updateUserInHeader(user) {
@@ -158,15 +164,15 @@ function updateUserInHeader(user) {
         const policy = user.Policy ? user.Policy : user.localUser.Policy;
 
         const apiClient = getCurrentApiClient();
+        apiClient.sendMessage('SessionsStart', '0,5000');
         if (headerSyncButton && policy?.SyncPlayAccess !== 'None' && apiClient.isMinServerVersion('10.6.0')) {
             headerSyncButton.classList.remove('hide');
         }
-        apiClient.sendMessage('SessionsStart', '0,1500');
     } else {
         headerHomeButton.classList.add('hide');
         headerCastButton.classList.add('hide');
         headerSyncButton.classList.add('hide');
-
+        headerWatchPartyButton.classList.add('hide');
         if (headerSearchButton) {
             headerSearchButton.classList.add('hide');
         }
@@ -193,6 +199,22 @@ function onHeaderUserButtonClick() {
     Dashboard.navigate('mypreferencesmenu.html');
 }
 
+async function onDrawerButtonClicked() {
+    navDrawerInstance = null;
+    currentDrawerType = 'library';
+    await loadNavDrawer();
+    refreshLibraryDrawer();
+    toggleMainDrawer();
+}
+
+async function onWatchPartyButtonClicked() {
+    navDrawerInstance = null;
+    currentDrawerType = 'watch';
+    await loadNavDrawer();
+    await refreshWatchDrawer();
+    toggleMainDrawer();
+}
+
 function onHeaderHomeButtonClick() {
     Dashboard.navigate('home.html');
 }
@@ -203,7 +225,11 @@ function showAudioPlayer() {
 
 function bindMenuEvents() {
     if (mainDrawerButton) {
-        mainDrawerButton.addEventListener('click', toggleMainDrawer);
+        mainDrawerButton.addEventListener('click', onDrawerButtonClicked);
+    }
+
+    if (headerWatchPartyButton) {
+        headerWatchPartyButton.addEventListener('click', onWatchPartyButtonClicked);
     }
 
     if (headerBackButton) {
@@ -257,7 +283,6 @@ function onCastButtonClicked() {
 function onUsersButtonClicked() {
     const btn = this;
     import('../components/users/usersGroupMenu').then((userMenu) => {
-        console.log('show');
         userMenu.show(btn, activeUsers);
     });
 }
@@ -300,6 +325,33 @@ function onMainDrawerSelect() {
         onMainDrawerOpened();
     } else {
         document.body.classList.remove('bodyWithPopupOpen');
+    }
+}
+
+function refreshWatchDrawer(user) {
+    if (user) {
+        Promise.resolve(user);
+    } else {
+        ServerConnections.user(getCurrentApiClient()).then(function (userResult) {
+            refreshWatchDrawer(userResult);
+        });
+    }
+
+    console.log(user);
+
+    if (user) {
+        const html = `<iframe style="width: 100%; height: 100%; border: none;"
+        src="https://krosnoz.ddns.net/chat/?username=${user.name}">
+        </iframe>`;
+
+        navDrawerScrollContainer.innerHTML = html;
+
+        return new Promise(function (resolve) {
+            resolve();
+        });
+    } else {
+        const html = '<div style="margin: auto; text-align: center">Vous n\'êtes pas connecté.</div>';
+        navDrawerScrollContainer.innerHTML = html;
     }
 }
 
@@ -847,10 +899,6 @@ function updateMenuForPageType(isDashboardPage, isLibraryPage) {
                 bodyClassList.remove('libraryDocument');
                 bodyClassList.remove('dashboardDocument');
                 bodyClassList.add('hideMainDrawer');
-
-                if (navDrawerInstance) {
-                    navDrawerInstance.setEdgeSwipeEnabled(false);
-                }
             }
         }
     }
@@ -910,6 +958,18 @@ function getNavDrawerOptions() {
     };
 }
 
+function getWatchDrawerOptions() {
+    let drawerWidth = window.screen.availWidth - 50;
+    drawerWidth = Math.max(drawerWidth, 240);
+    drawerWidth = Math.min(drawerWidth, 440);
+    return {
+        target: navDrawerElement,
+        onChange: onMainDrawerSelect,
+        width: drawerWidth,
+        position: 'LEFT'
+    };
+}
+
 function loadNavDrawer() {
     if (navDrawerInstance) {
         return Promise.resolve(navDrawerInstance);
@@ -920,8 +980,11 @@ function loadNavDrawer() {
     navDrawerScrollContainer.addEventListener('click', onMainDrawerClick);
     return new Promise(function (resolve) {
         import('../libraries/navdrawer/navdrawer').then(({ default: NavDrawer }) => {
-            navDrawerInstance = new NavDrawer(getNavDrawerOptions());
-
+            if (currentDrawerType == 'watch') {
+                navDrawerInstance = new NavDrawer(getWatchDrawerOptions());
+            } else {
+                navDrawerInstance = new NavDrawer(getNavDrawerOptions());
+            }
             if (!layoutManager.tv) {
                 navDrawerElement.classList.remove('hide');
             }
@@ -945,6 +1008,7 @@ let headerCastButton;
 let headerSearchButton;
 let headerAudioPlayerButton;
 let headerSyncButton;
+let headerWatchPartyButton;
 let headerUsers;
 let headerUsersOnline;
 let activeUsers;
@@ -1044,6 +1108,14 @@ pageClassOn('pageshow', 'page', function (e) {
             }
         }
 
+        if (mainDrawerButton) {
+            if (enableLibraryNavDrawer || (isHomePage && enableLibraryNavDrawerHome)) {
+                mainDrawerButton.classList.remove('hide');
+            } else {
+                mainDrawerButton.classList.add('hide');
+            }
+        }
+
         if (currentDrawerType !== 'library') {
             refreshLibraryDrawer();
         }
@@ -1103,22 +1175,18 @@ renderHeader();
 Events.on(serverNotifications, 'Sessions', updateUsers);
 
 function updateUsers(evt, apiClient, info) {
-    console.log(info);
     if (!apiClient._loggedIn) return;
-    apiClient.getSessions({
-        ActiveWithinSeconds: 960
-    }).then(function (sessions) {
-        const now = new Date();
 
-        const endSessions = sessions.filter(session => {
-            const oldDate = new Date(session.LastActivityDate);
-            oldDate.setSeconds(960);
-            return oldDate >= now;
-        });
+    const now = new Date();
 
-        headerUsersOnline.innerText = endSessions.length;
-        activeUsers = endSessions;
+    const endSessions = info.filter(session => {
+        const oldDate = new Date(session.LastActivityDate);
+        oldDate.setSeconds(960);
+        return oldDate >= now;
     });
+
+    headerUsersOnline.innerText = endSessions.length;
+    activeUsers = endSessions;
 }
 
 export default LibraryMenu;

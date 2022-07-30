@@ -326,6 +326,16 @@
 
 .mainDrawer-scrollContainer {
     padding-bottom: 10vh;
+
+    .sendText {
+        margin: auto;
+        width: 90%;
+
+        .listMessages {
+            padding-bottom: 1rem;
+            max-height: 80vh;
+        }
+    }
 }
 
 @media all and (min-width: 40em) {
