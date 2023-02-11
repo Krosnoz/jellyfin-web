@@ -1078,7 +1078,7 @@ function setTitle(title) {
         pageTitleElement.innerText = html || '';
     }
 
-    document.title = title || 'Jellyfin';
+    document.title = title || 'KrosMovie';
 }
 
 function setTransparentMenu(transparent) {
