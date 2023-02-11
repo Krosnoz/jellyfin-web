@@ -39,6 +39,7 @@ class PlayAccessValidation {
         try {
             const apiClient = ServerConnections.getApiClient(serverId);
             return apiClient.getItem(apiClient.getCurrentUserId(), item.Id).then(itemData => {
+                if (itemData.MediaSources[0].Container === 'mp4') return;
                 if (itemData.MediaStreams[0].Codec == 'hevc' || itemData.MediaStreams[0].Codec == 'h265') {
                     return showErrorH265Message().finally(Promise.reject);
                 }
