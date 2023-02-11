@@ -373,6 +373,26 @@ div[data-role=controlgroup] a.ui-btn-active {
     background: transparent !important;
 }
 
+.sendAll {
+    display: flex;
+    flex-direction: row;
+    padding: 1rem;
+    width: 100%;
+}
+
+.sendAll .typeTextForm {
+    width: 100%;
+}
+
+.headerUsersTextOnline {
+    padding-right: 0.6rem;
+}
+
+.activeDevices.itemsContainer {
+    /* offset for cardBox margin */
+    margin: -0.6em;
+}
+
 .activeSession .backgroundProgress,
 .activeSession .playbackProgress,
 .activeSession .transcodingProgress {

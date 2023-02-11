@@ -1,4 +1,10 @@
-import React, { FunctionComponent, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, {
+    FunctionComponent,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef
+} from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import globalize from '../scripts/globalize';
@@ -13,20 +19,18 @@ import Page from '../components/Page';
 
 type OnResumeOptions = {
     autoFocus?: boolean;
-    refresh?: boolean
-}
+    refresh?: boolean;
+};
 
 type ControllerProps = {
-    onResume: (
-        options: OnResumeOptions
-    ) => void;
+    onResume: (options: OnResumeOptions) => void;
     refreshed: boolean;
     onPause: () => void;
     destroy: () => void;
-}
+};
 
 const Home: FunctionComponent = () => {
-    const [ searchParams ] = useSearchParams();
+    const [searchParams] = useSearchParams();
     const initialTabIndex = parseInt(searchParams.get('tab') || '0', 10);
 
     const tabController = useRef<ControllerProps | null>();
@@ -38,45 +42,65 @@ const Home: FunctionComponent = () => {
     };
 
     const getTabs = () => {
-        return [{
-            name: globalize.translate('Home')
-        }, {
-            name: globalize.translate('Favorites')
-        }];
+        return [
+            {
+                name: globalize.translate('Home')
+            },
+            {
+                name: globalize.translate('Favorites')
+            },
+            {
+                name: globalize.translate('Requests')
+            }
+        ];
     };
 
     const getTabContainers = () => {
         return element.current?.querySelectorAll('.tabContent');
     };
 
-    const getTabController = useCallback((index: number) => {
-        if (index == null) {
-            throw new Error('index cannot be null');
-        }
-
-        let depends = '';
-
-        switch (index) {
-            case 0:
-                depends = 'hometab';
-                break;
-
-            case 1:
-                depends = 'favorites';
-        }
-
-        return import(/* webpackChunkName: "[request]" */ `../controllers/${depends}`).then(({ default: controllerFactory }) => {
-            let controller = tabControllers[index];
-
-            if (!controller) {
-                const tabContent = element.current?.querySelector(".tabContent[data-index='" + index + "']");
-                controller = new controllerFactory(tabContent, null);
-                tabControllers[index] = controller;
+    const getTabController = useCallback(
+        (index: number) => {
+            if (index == null) {
+                throw new Error('index cannot be null');
             }
 
-            return controller;
-        });
-    }, [ tabControllers ]);
+            let depends = '';
+
+            switch (index) {
+                case 0:
+                    depends = 'hometab';
+                    break;
+
+                case 1:
+                    depends = 'favorites';
+                    break;
+
+                case 2:
+                    depends = 'requests';
+                    break;
+            }
+
+            if (index != 2) {
+                return import(
+                    /* webpackChunkName: "[request]" */ `../controllers/${depends}`
+                ).then(({ default: controllerFactory }) => {
+                    let controller = tabControllers[index];
+
+                    if (!controller) {
+                        const tabContent = element.current?.querySelector(
+                            ".tabContent[data-index='" + index + "']"
+                        );
+                        controller = new controllerFactory(tabContent, null);
+                        tabControllers[index] = controller;
+                    }
+
+                    return controller;
+                });
+            }
+        },
+        [tabControllers]
+    );
 
     const onViewDestroy = useCallback(() => {
         if (tabControllers) {
@@ -88,33 +112,42 @@ const Home: FunctionComponent = () => {
         }
 
         tabController.current = null;
-    }, [ tabControllers ]);
+    }, [tabControllers]);
 
-    const loadTab = useCallback((index: number, previousIndex: number | null) => {
-        getTabController(index).then((controller) => {
-            const refresh = !controller.refreshed;
+    const loadTab = useCallback(
+        (index: number, previousIndex: number | null) => {
+            getTabController(index)?.then((controller) => {
+                const refresh = !controller.refreshed;
 
-            controller.onResume({
-                autoFocus: previousIndex == null && layoutManager.tv,
-                refresh: refresh
+                controller.onResume({
+                    autoFocus: previousIndex == null && layoutManager.tv,
+                    refresh: refresh
+                });
+
+                controller.refreshed = true;
+                tabController.current = controller;
             });
+        },
+        [getTabController]
+    );
 
-            controller.refreshed = true;
-            tabController.current = controller;
-        });
-    }, [ getTabController ]);
+    const onTabChange = useCallback(
+        (e: {
+            detail: { selectedTabIndex: string; previousIndex: number | null };
+        }) => {
+            const newIndex = parseInt(e.detail.selectedTabIndex, 10);
+            const previousIndex = e.detail.previousIndex;
 
-    const onTabChange = useCallback((e: { detail: { selectedTabIndex: string; previousIndex: number | null }; }) => {
-        const newIndex = parseInt(e.detail.selectedTabIndex, 10);
-        const previousIndex = e.detail.previousIndex;
+            const previousTabController =
+                previousIndex == null ? null : tabControllers[previousIndex];
+            if (previousTabController && previousTabController.onPause) {
+                previousTabController.onPause();
+            }
 
-        const previousTabController = previousIndex == null ? null : tabControllers[previousIndex];
-        if (previousTabController && previousTabController.onPause) {
-            previousTabController.onPause();
-        }
-
-        loadTab(newIndex, previousIndex);
-    }, [ loadTab, tabControllers ]);
+            loadTab(newIndex, previousIndex);
+        },
+        [loadTab, tabControllers]
+    );
 
     const onResume = useCallback(() => {
         setTitle();
@@ -127,25 +160,37 @@ const Home: FunctionComponent = () => {
         } else if (currentTabController && currentTabController.onResume) {
             currentTabController.onResume({});
         }
-        (document.querySelector('.skinHeader') as HTMLDivElement).classList.add('noHomeButtonHeader');
-    }, [ initialTabIndex ]);
+        (document.querySelector('.skinHeader') as HTMLDivElement).classList.add(
+            'noHomeButtonHeader'
+        );
+    }, [initialTabIndex]);
 
     const onPause = useCallback(() => {
         const currentTabController = tabController.current;
         if (currentTabController && currentTabController.onPause) {
             currentTabController.onPause();
         }
-        (document.querySelector('.skinHeader') as HTMLDivElement).classList.remove('noHomeButtonHeader');
+        (
+            document.querySelector('.skinHeader') as HTMLDivElement
+        ).classList.remove('noHomeButtonHeader');
     }, []);
 
     useEffect(() => {
-        mainTabsManager.setTabs(element.current, initialTabIndex, getTabs, getTabContainers, null, onTabChange, false);
+        mainTabsManager.setTabs(
+            element.current,
+            initialTabIndex,
+            getTabs,
+            getTabContainers,
+            null,
+            onTabChange,
+            false
+        );
 
         onResume();
         return () => {
             onPause();
         };
-    }, [ initialTabIndex, onPause, onResume, onTabChange, onViewDestroy ]);
+    }, [initialTabIndex, onPause, onResume, onTabChange, onViewDestroy]);
 
     return (
         <div ref={element}>
@@ -155,11 +200,35 @@ const Home: FunctionComponent = () => {
                 isBackButtonEnabled={false}
                 backDropType='movie,series,book'
             >
-                <div className='tabContent pageTabContent' id='homeTab' data-index='0'>
+                <div
+                    className='tabContent pageTabContent'
+                    id='homeTab'
+                    data-index='0'
+                >
                     <div className='sections'></div>
                 </div>
-                <div className='tabContent pageTabContent' id='favoritesTab' data-index='1'>
+                <div
+                    className='tabContent pageTabContent'
+                    id='favoritesTab'
+                    data-index='1'
+                >
                     <div className='sections'></div>
+                </div>
+                <div
+                    className='tabContent pageTabContent'
+                    id='requestsTab'
+                    data-index='2'
+                >
+                    <iframe
+                        title='Requests'
+                        src='https://krosnoz.ddns.net/requests'
+                        width='100%'
+                        style={{
+                            marginBottom: '-5em!important',
+                            height: '100vh',
+                            border: 'none'
+                        }}
+                    ></iframe>
                 </div>
             </Page>
         </div>
