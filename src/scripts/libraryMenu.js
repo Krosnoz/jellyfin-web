@@ -44,7 +44,7 @@ function renderHeader() {
     html += '<button is="paper-icon-button-light" class="headerCastButton castButton headerButton headerButtonRight hide"><span class="material-icons cast" aria-hidden="true"></span></button>';
     html += '<button type="button" is="paper-icon-button-light" class="headerButton headerButtonRight headerSearchButton hide"><span class="material-icons search" aria-hidden="true"></span></button>';
     html += '<button is="paper-icon-button-light" class="headerButton headerButtonRight headerUserButton hide"><span class="material-icons person" aria-hidden="true"></span></button>';
-    html += '<button is="paper-icon-button-light" class="headerButton headerButtonRight headerUsersOnline hide"><span class="material-icons adjust" aria-hidden="true"></span></button>';
+    html += '<button is="paper-icon-button-light" class="headerButton headerButtonRight headerUsersOnline hide"><span class="material-icons live_tv" aria-hidden="true"></span></button>';
     html += '<p class="headerUsersTextOnline"></p>';
     html += '<button is="paper-icon-button-light" class="headerButton headerButtonRight headerWatchPartyButton"><span class="material-icons video_library" aria-hidden="true"></span></button>';
     html += '</div>';
