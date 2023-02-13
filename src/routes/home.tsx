@@ -221,7 +221,7 @@ const Home: FunctionComponent = () => {
                 >
                     <iframe
                         title='Requests'
-                        src='https://krosnoz.ddns.net/requests'
+                        src='https://krosquests.ddns.net'
                         width='100%'
                         style={{
                             marginBottom: '-5em!important',
