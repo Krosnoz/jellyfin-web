@@ -756,18 +756,18 @@ export function canPlaySecondaryAudio(videoTestElement) {
             });
         }
 
-        // // Progressive mp4 transcoding
-        // if (mp4VideoCodecs.length && videoAudioCodecs.length) {
-        //     profile.TranscodingProfiles.push({
-        //         Container: 'mp4',
-        //         Type: 'Video',
-        //         AudioCodec: videoAudioCodecs.join(','),
-        //         VideoCodec: mp4VideoCodecs.join(','),
-        //         Context: 'Streaming',
-        //         Protocol: 'http',
-        //         MaxAudioChannels: physicalAudioChannels.toString()
-        //     });
-        // }
+        // Progressive mp4 transcoding
+        if (mp4VideoCodecs.length && videoAudioCodecs.length) {
+            profile.TranscodingProfiles.push({
+                Container: 'mp4',
+                Type: 'Video',
+                AudioCodec: videoAudioCodecs.join(','),
+                VideoCodec: mp4VideoCodecs.join(','),
+                Context: 'Streaming',
+                Protocol: 'http',
+                MaxAudioChannels: physicalAudioChannels.toString()
+            });
+        }
 
         profile.TranscodingProfiles.push({
             Container: 'mp4',
