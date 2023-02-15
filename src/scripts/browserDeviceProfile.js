@@ -741,18 +741,33 @@ export function canPlaySecondaryAudio(videoTestElement) {
             }
         }
 
-        // Progressive mp4 transcoding
-        if (mp4VideoCodecs.length && videoAudioCodecs.length) {
+        if (webmAudioCodecs.length && webmVideoCodecs.length) {
             profile.TranscodingProfiles.push({
-                Container: 'mp4',
+                Container: 'webm',
                 Type: 'Video',
-                AudioCodec: videoAudioCodecs.join(','),
-                VideoCodec: mp4VideoCodecs.join(','),
+                AudioCodec: webmAudioCodecs.join(','),
+                // TODO: Remove workaround when servers migrate away from 'vpx' for transcoding profiles.
+                VideoCodec: (canPlayVp8 ? webmVideoCodecs.concat('vpx') : webmVideoCodecs).join(','),
                 Context: 'Streaming',
                 Protocol: 'http',
+                // If audio transcoding is needed, limit channels to number of physical audio channels
+                // Trying to transcode to 5 channels when there are only 2 speakers generally does not sound good
                 MaxAudioChannels: physicalAudioChannels.toString()
             });
         }
+
+        // // Progressive mp4 transcoding
+        // if (mp4VideoCodecs.length && videoAudioCodecs.length) {
+        //     profile.TranscodingProfiles.push({
+        //         Container: 'mp4',
+        //         Type: 'Video',
+        //         AudioCodec: videoAudioCodecs.join(','),
+        //         VideoCodec: mp4VideoCodecs.join(','),
+        //         Context: 'Streaming',
+        //         Protocol: 'http',
+        //         MaxAudioChannels: physicalAudioChannels.toString()
+        //     });
+        // }
 
         profile.TranscodingProfiles.push({
             Container: 'mp4',
