@@ -81,7 +81,7 @@ const Home: FunctionComponent = () => {
                     break;
             }
 
-            if (index != 2) {
+            if (index !== 2) {
                 return import(
                     /* webpackChunkName: "[request]" */ `../controllers/${depends}`
                 ).then(({ default: controllerFactory }) => {
@@ -116,6 +116,7 @@ const Home: FunctionComponent = () => {
 
     const loadTab = useCallback(
         (index: number, previousIndex: number | null) => {
+            if (index === 2) return;
             getTabController(index)?.then((controller) => {
                 const refresh = !controller.refreshed;
 
@@ -218,18 +219,7 @@ const Home: FunctionComponent = () => {
                     className='tabContent pageTabContent'
                     id='requestsTab'
                     data-index='2'
-                >
-                    <iframe
-                        title='Requests'
-                        src='https://krosquests.ddns.net'
-                        width='100%'
-                        style={{
-                            marginBottom: '-5em!important',
-                            height: '100vh',
-                            border: 'none'
-                        }}
-                    ></iframe>
-                </div>
+                />
             </Page>
         </div>
     );

@@ -235,6 +235,7 @@
 
 .headerTop {
     padding: 0.54em 0;
+    z-index: 1;
 }
 
 .sectionTabs {
@@ -402,6 +403,7 @@
         justify-content: center;
         position: relative;
         margin-top: -4.3em;
+        z-index: 0;
     }
 
     .libraryPage:not(.noSecondaryNavPage) {
