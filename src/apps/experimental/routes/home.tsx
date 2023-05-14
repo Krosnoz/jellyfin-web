@@ -74,19 +74,17 @@ const Home: FunctionComponent = () => {
                 break;
         }
 
-        if (index !== 2) {
-            return import(/* webpackChunkName: "[request]" */ `../../../controllers/${depends}`).then(({ default: controllerFactory }) => {
-                let controller = tabControllers[index];
+        return import(/* webpackChunkName: "[request]" */ `../../../controllers/${depends}`).then(({ default: controllerFactory }) => {
+            let controller = tabControllers[index];
 
-                if (!controller) {
-                    const tabContent = element.current?.querySelector(".tabContent[data-index='" + index + "']");
-                    controller = new controllerFactory(tabContent, null);
-                    tabControllers[index] = controller;
-                }
+            if (!controller) {
+                const tabContent = element.current?.querySelector(".tabContent[data-index='" + index + "']");
+                controller = new controllerFactory(tabContent, null);
+                tabControllers[index] = controller;
+            }
 
-                return controller;
-            });
-        }
+            return controller;
+        });
     }, [ tabControllers ]);
 
     const onViewDestroy = useCallback(() => {
