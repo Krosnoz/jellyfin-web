@@ -113,6 +113,21 @@ function showOptionsMenu(btn, session) {
     });
 }
 
+function onSendStringSubmit(e) {
+    const form = e.target;
+    DashboardPage.sessionsList.forEach(session => {
+        ServerConnections.getApiClient(session.ServerId).sendMessageCommand(session.Id, {
+            Text: form.querySelector('#txtTypeText', form).value,
+            TimeoutMs: 15000
+        });
+    });
+    form.querySelector('input').value = '';
+
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+}
+
 function onActiveDevicesClick(evt) {
     const btn = dom.parentWithClass(evt.target, 'sessionCardButton');
 
@@ -779,6 +794,7 @@ export default function (view) {
             Events.on(serverNotifications, 'PackageInstallationCompleted', onPackageInstall);
             Events.on(serverNotifications, 'Sessions', onSessionsUpdate);
             Events.on(serverNotifications, 'ScheduledTasksInfo', onScheduledTasksUpdate);
+            Events.on(serverNotifications, 'SendString', onSendStringSubmit);
             DashboardPage.lastAppUpdateCheck = null;
             reloadSystemInfo(page, ApiClient);
 

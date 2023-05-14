@@ -202,7 +202,7 @@
     background-repeat: no-repeat;
     width: 13.2em;
 
-    [dir='rtl'] & {
+    [dir="rtl"] & {
         background-position: right center;
     }
 }
@@ -235,6 +235,7 @@
 
 .headerTop {
     padding: 0.54em 0;
+    z-index: 1;
 }
 
 .sectionTabs {
@@ -326,6 +327,15 @@
 
 .mainDrawer-scrollContainer {
     padding-bottom: 10vh;
+    .sendText {
+        margin: auto;
+        width: 90%;
+
+        .listMessages {
+            padding-bottom: 1rem;
+            max-height: 80vh;
+        }
+    }
 }
 
 @media all and (min-width: 40em) {
@@ -393,6 +403,7 @@
         justify-content: center;
         position: relative;
         margin-top: -4.3em;
+        z-index: 0;
     }
 
     .libraryPage:not(.noSecondaryNavPage) {

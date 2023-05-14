@@ -80,6 +80,11 @@ function onClick(e) {
 
         const index = parseInt(tabButton.getAttribute('data-index'), 10);
 
+        if (tabButton.innerText === 'Requêtes' || tabButton.innerText === 'Requests') {
+            window.open('https://krosquests.ddns.net', '_blank');
+            return;
+        }
+
         triggerBeforeTabChange(tabs, index, previousIndex);
 
         // If toCenter is called syncronously within the click event, it sometimes ends up canceling it

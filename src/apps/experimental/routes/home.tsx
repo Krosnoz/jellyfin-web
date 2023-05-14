@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { FunctionComponent, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import globalize from '../../../scripts/globalize';
@@ -10,6 +10,7 @@ import '../../../elements/emby-tabs/emby-tabs';
 import '../../../elements/emby-button/emby-button';
 import '../../../elements/emby-scroller/emby-scroller';
 import Page from '../../../components/Page';
+import { ShepherdTourContext } from 'react-shepherd';
 
 type OnResumeOptions = {
     autoFocus?: boolean;
@@ -28,6 +29,7 @@ type ControllerProps = {
 const Home: FunctionComponent = () => {
     const [ searchParams ] = useSearchParams();
     const initialTabIndex = parseInt(searchParams.get('tab') || '0', 10);
+    const tour = useContext(ShepherdTourContext);
 
     const tabController = useRef<ControllerProps | null>();
     const tabControllers = useMemo<ControllerProps[]>(() => [], []);
@@ -42,6 +44,8 @@ const Home: FunctionComponent = () => {
             name: globalize.translate('Home')
         }, {
             name: globalize.translate('Favorites')
+        }, {
+            name: globalize.translate('Requests')
         }];
     };
 
@@ -63,19 +67,26 @@ const Home: FunctionComponent = () => {
 
             case 1:
                 depends = 'favorites';
+                break;
+
+            case 2:
+                depends = 'requests';
+                break;
         }
 
-        return import(/* webpackChunkName: "[request]" */ `../../../controllers/${depends}`).then(({ default: controllerFactory }) => {
-            let controller = tabControllers[index];
+        if (index !== 2) {
+            return import(/* webpackChunkName: "[request]" */ `../../../controllers/${depends}`).then(({ default: controllerFactory }) => {
+                let controller = tabControllers[index];
 
-            if (!controller) {
-                const tabContent = element.current?.querySelector(".tabContent[data-index='" + index + "']");
-                controller = new controllerFactory(tabContent, null);
-                tabControllers[index] = controller;
-            }
+                if (!controller) {
+                    const tabContent = element.current?.querySelector(".tabContent[data-index='" + index + "']");
+                    controller = new controllerFactory(tabContent, null);
+                    tabControllers[index] = controller;
+                }
 
-            return controller;
-        });
+                return controller;
+            });
+        }
     }, [ tabControllers ]);
 
     const onViewDestroy = useCallback(() => {
@@ -91,6 +102,7 @@ const Home: FunctionComponent = () => {
     }, [ tabControllers ]);
 
     const loadTab = useCallback((index: number, previousIndex: number | null) => {
+        if (index === 2) return;
         getTabController(index).then((controller) => {
             const refresh = !controller.refreshed;
 
@@ -141,6 +153,14 @@ const Home: FunctionComponent = () => {
     }, []);
 
     useEffect(() => {
+        const isTourStarted = localStorage.getItem('tour');
+        if (tour && !isTourStarted) {
+            tour.start();
+            localStorage.setItem('tour', 'true');
+        }
+    }, [tour]);
+
+    useEffect(() => {
         mainTabsManager.setTabs(element.current, initialTabIndex, getTabs, getTabContainers, null, onTabChange, false);
 
         onResume();
@@ -163,6 +183,11 @@ const Home: FunctionComponent = () => {
                 <div className='tabContent pageTabContent' id='favoritesTab' data-index='1'>
                     <div className='sections'></div>
                 </div>
+                <div
+                    className='tabContent pageTabContent'
+                    id='requestsTab'
+                    data-index='2'
+                />
             </Page>
         </div>
     );
