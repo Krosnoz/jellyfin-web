@@ -44,8 +44,8 @@ progress[aria-valuenow]::before {
 }
 
 @media all and (min-width: 50em) {
-    .type-interior > div[data-role=content],
-    .type-interior > .ui-panel-content-wrap > div[data-role=content] {
+    .type-interior > div[data-role="content"],
+    .type-interior > .ui-panel-content-wrap > div[data-role="content"] {
         padding-right: 0;
         padding-left: 0;
         padding-top: 0;
@@ -73,7 +73,7 @@ progress[aria-valuenow]::before {
     height: 4em;
 }
 
-a[data-role=button] {
+a[data-role="button"] {
     background: #292929 !important;
     background-clip: padding-box;
     -webkit-font-smoothing: antialiased;
@@ -88,24 +88,24 @@ a[data-role=button] {
     text-decoration: none !important;
 }
 
-div[data-role=controlgroup] a[data-role=button] {
+div[data-role="controlgroup"] a[data-role="button"] {
     display: inline-block !important;
     margin: 0 !important;
     box-shadow: none !important;
     border-radius: 0;
 }
 
-div[data-role=controlgroup] a[data-role=button]:first-child {
+div[data-role="controlgroup"] a[data-role="button"]:first-child {
     border-bottom-left-radius: 0.3125em;
     border-top-left-radius: 0.3125em;
 }
 
-div[data-role=controlgroup] a[data-role=button]:last-child {
+div[data-role="controlgroup"] a[data-role="button"]:last-child {
     border-bottom-right-radius: 0.3125em;
     border-top-right-radius: 0.3125em;
 }
 
-div[data-role=controlgroup] a[data-role=button] + a[data-role=button] {
+div[data-role="controlgroup"] a[data-role="button"] + a[data-role="button"] {
     [dir="ltr"] & {
         border-left-width: 0 !important;
         margin: 0 0 0 -0.4em !important;
@@ -117,7 +117,7 @@ div[data-role=controlgroup] a[data-role=button] + a[data-role=button] {
     }
 }
 
-div[data-role=controlgroup] a.ui-btn-active {
+div[data-role="controlgroup"] a.ui-btn-active {
     background: #00a4dc !important;
     color: #292929 !important;
 }
@@ -371,6 +371,26 @@ div[data-role=controlgroup] a.ui-btn-active {
     margin: 0;
     width: 100%;
     background: transparent !important;
+}
+
+.sendAll {
+    display: flex;
+    flex-direction: row;
+    padding: 1rem;
+    width: 100%;
+}
+
+.sendAll .typeTextForm {
+    width: 100%;
+}
+
+.headerUsersTextOnline {
+    padding-right: 0.6rem;
+}
+
+.activeDevices.itemsContainer {
+    /* offset for cardBox margin */
+    margin: -0.6em;
 }
 
 .activeSession .backgroundProgress,

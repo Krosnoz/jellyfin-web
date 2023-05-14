@@ -44,7 +44,7 @@ class NavDrawer {
             maxMaskOpacity: 0.5
         };
         options.target.classList.add('transition');
-        this.scrollContainer = options.target.querySelector('.mainDrawer-scrollContainer');
+        this.scrollContainer = options.target.querySelector('.scrollContainer');
         this.scrollContainer.classList.add('scrollY');
         this.isVisible = false;
         this.initialize();
@@ -206,10 +206,13 @@ class NavDrawer {
 
         options.target.classList.add('touch-menu-la');
         options.target.style.width = options.width + 'px';
-        if (globalize.getIsRTL())
+        if (options.position == 'LEFT') {
             options.target.style.right = -options.width + 'px';
-        else
+            options.target.style.left = 'unset';
+        } else {
+            options.target.style.right = 'unset';
             options.target.style.left = -options.width + 'px';
+        }
 
         if (!options.disableMask) {
             this.mask = document.createElement('div');
@@ -220,10 +223,15 @@ class NavDrawer {
 
     animateToPosition(pos) {
         const options = this.options;
-        const languageAwarePos = globalize.getIsRTL() ? -pos : pos;
-        requestAnimationFrame(function () {
-            options.target.style.transform = pos ? 'translateX(' + languageAwarePos + 'px)' : 'none';
-        });
+        if (options.position == 'LEFT') {
+            requestAnimationFrame(function () {
+                options.target.style.transform = pos ? 'translateX(-' + pos + 'px)' : 'none';
+            });
+        } else {
+            requestAnimationFrame(function () {
+                options.target.style.transform = pos ? 'translateX(' + pos + 'px)' : 'none';
+            });
+        }
     }
 
     changeMenuPos() {
@@ -261,6 +269,11 @@ class NavDrawer {
         const options = this.options;
 
         this.animateToPosition(options.width);
+        if (options.position == 'LEFT') {
+            this.currentPos = window.screen.availWidth;
+        } else {
+            this.currentPos = options.width;
+        }
         this.currentPos = options.width;
         this.isVisible = true;
         options.target.classList.add('drawer-open');

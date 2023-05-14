@@ -106,6 +106,8 @@ export function setTabs(view, selectedIndex, getTabsFn, getTabContainersFn, onBe
         const tabsHtml = '<div is="emby-tabs"' + indexAttribute + ' class="tabs-viewmenubar"><div class="emby-tabs-slider" style="white-space:nowrap;">' + getTabsFn().map(function (t) {
             let tabClass = 'emby-tab-button';
 
+            if (index === 2) tabClass += ' requests';
+
             if (t.enabled === false) {
                 tabClass += ' hide';
             }
