@@ -230,7 +230,7 @@ import Dashboard from '../utils/dashboard';
     }
 
     let onBeforeChange;
-    const mainAnimatedPages = document.querySelector('.mainAnimatedPages');
+    const mainAnimatedPages = document.querySelector('#reactRoot');
     let allPages = [];
     let currentUrls = [];
     const pageContainerCount = 3;

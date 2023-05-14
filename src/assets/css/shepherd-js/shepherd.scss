@@ -1,0 +1,46 @@
+.shepherd-intro-img {
+    max-width: 10rem;
+}
+
+.shepherd-text {
+    display: flex;
+    margin: 0 1rem;
+    gap: 1rem;
+    color: white;
+}
+
+.shepherd-has-title .shepherd-content .shepherd-header {
+    background: #010e18;
+}
+
+.shepherd-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+}
+
+.shepherd-element {
+    background: #010e18;
+}
+
+.shepherd-has-title .shepherd-content .shepherd-cancel-icon, .shepherd-cancel-icon {
+    border-radius: 10px;
+    padding: 0 5px;
+    color: white;
+    &:hover {
+        color: #00a4dc;
+        background-color: rgba(0, 164, 220, 0.2);
+    }
+}
+
+.shepherd-button-next {
+    border-radius: 8px;
+    min-width: 4rem;
+    min-height: 2rem;
+    padding: 0 5px;
+    color: white;
+    background-color: rgba(0, 164, 220, 0.2);
+    &:hover {
+        color: #00a4dc;
+    }
+}

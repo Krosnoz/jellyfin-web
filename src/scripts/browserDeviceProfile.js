@@ -576,14 +576,14 @@ export function canPlaySecondaryAudio(videoTestElement) {
             videoAudioCodecs.push('vorbis');
         }
 
-        if (webmVideoCodecs.length) {
-            profile.DirectPlayProfiles.push({
-                Container: 'webm',
-                Type: 'Video',
-                VideoCodec: webmVideoCodecs.join(','),
-                AudioCodec: webmAudioCodecs.join(',')
-            });
-        }
+        // if (webmVideoCodecs.length) {
+        //     profile.DirectPlayProfiles.push({
+        //         Container: 'webm',
+        //         Type: 'Video',
+        //         VideoCodec: webmVideoCodecs.join(','),
+        //         AudioCodec: webmAudioCodecs.join(',')
+        //     });
+        // }
 
         if (mp4VideoCodecs.length) {
             profile.DirectPlayProfiles.push({
@@ -740,6 +740,21 @@ export function canPlaySecondaryAudio(videoTestElement) {
                 });
             }
         }
+
+        // if (webmAudioCodecs.length && webmVideoCodecs.length) {
+        //     profile.TranscodingProfiles.push({
+        //         Container: 'webm',
+        //         Type: 'Video',
+        //         AudioCodec: webmAudioCodecs.join(','),
+        //         // TODO: Remove workaround when servers migrate away from 'vpx' for transcoding profiles.
+        //         VideoCodec: (canPlayVp8 ? webmVideoCodecs.concat('vpx') : webmVideoCodecs).join(','),
+        //         Context: 'Streaming',
+        //         Protocol: 'http',
+        //         // If audio transcoding is needed, limit channels to number of physical audio channels
+        //         // Trying to transcode to 5 channels when there are only 2 speakers generally does not sound good
+        //         MaxAudioChannels: physicalAudioChannels.toString()
+        //     });
+        // }
 
         // Progressive mp4 transcoding
         if (mp4VideoCodecs.length && videoAudioCodecs.length) {

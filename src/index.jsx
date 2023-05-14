@@ -7,6 +7,7 @@ import 'classlist.js';
 import 'whatwg-fetch';
 import 'resize-observer-polyfill';
 import './assets/css/site.scss';
+import './assets/css/shepherd-js/shepherd.scss';
 import React, { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom';
 import Events from './utils/events.ts';
