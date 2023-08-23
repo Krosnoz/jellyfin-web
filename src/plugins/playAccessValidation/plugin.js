@@ -40,11 +40,9 @@ class PlayAccessValidation {
         // try {
         //     const apiClient = ServerConnections.getApiClient(serverId);
         //     return apiClient.getItem(apiClient.getCurrentUserId(), item.Id).then(itemData => {
-        //         itemData.MediaSources.forEach(source => {
-        //             if (source.Container === 'mp4' || source.Profile.includes('10')) return;
-        //         });
+        //         console.log(itemData);
         //         itemData.MediaStreams.forEach(stream => {
-        //             if ((stream.Codec == 'hevc' || stream.Codec == 'h265') && !stream.ColorSpace) {
+        //             if ((stream.Codec == 'eac3' || stream.Codec == 'dts') && !stream.ColorSpace) {
         //                 showErrorH265Message().finally(Promise.reject);
         //             }
         //         });
