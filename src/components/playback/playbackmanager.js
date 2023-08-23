@@ -2282,7 +2282,18 @@ class PlaybackManager {
                 options.mediaType = item.MediaType;
                 options.item = item;
 
-                runNextPrePlay(interceptors, 0, options, resolve, reject);
+                const isTrancoding = options.item.MediaStreams.find(stream => {
+                    return !!((stream.Codec == 'eac3' || stream.Codec == 'dts') && !stream.ColorSpace);
+                }) || false;
+
+                if (isTrancoding) {
+                    let msg = 'Ce film est dans un format non pris en charge par le streaming. Vous pouvez toujours télécharger le contenu en cliquant sur les trois points alignés puis téléchargement.';
+                    msg += '<br/><br/>';
+                    msg += '<img style="width: 100%;" src="https://i.imgur.com/4ndpDEP.png">';
+                    alert(msg, 'Non disponible en streaming').finally(reject);
+                } else {
+                    runNextPrePlay(interceptors, 0, options, resolve, reject);
+                }
             });
         }
 

@@ -49,6 +49,7 @@ class ExpirementalPlaybackWarnings {
         this.name = 'Experimental playback warnings';
         this.type = PluginType.PreplayIntercept;
         this.id = 'expirementalplaybackwarnings';
+        this.order = 0;
     }
 
     intercept(options) {

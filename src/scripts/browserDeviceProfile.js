@@ -62,7 +62,8 @@ function canPlayHlsWithMSE() {
 }
 
 function supportsAc3(videoTestElement) {
-    if (browser.edgeUwp || browser.tizen || browser.web0s) {
+    console.log(browser);
+    if (browser.edgeUwp || browser.tizen || browser.web0s || browser.chrome) {
         return true;
     }
 
@@ -315,6 +316,7 @@ function getPhysicalAudioChannels(options, videoTestElement) {
 
     const isSurroundSoundSupportedBrowser = browser.safari || browser.chrome || browser.edgeChromium || browser.firefox || browser.tv || browser.ps4 || browser.xboxOne;
     const isAc3Eac3Supported = supportsAc3(videoTestElement) || supportsEac3(videoTestElement);
+    console.log(isAc3Eac3Supported);
     const speakerCount = getSpeakerCount();
 
     // AC3/EAC3 hinted that device is able to play dolby surround sound.
